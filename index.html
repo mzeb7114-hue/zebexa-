@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXA — Access Clarity</title>
+
+  <!-- Supabase v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Style -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="container">
+
+    <section class="brand">
+      <h1 class="exa">EXA</h1>
+      <p class="tagline">
+        Clarity isn’t found.<br />
+        <span>It’s allowed.</span>
+      </p>
+    </section>
+
+    <section class="card">
+      <form id="authForm">
+        <input
+          type="email"
+          id="email"
+          placeholder="you@example.com"
+          required
+        />
+
+        <input
+          type="password"
+          id="password"
+          placeholder="Password"
+          required
+        />
+
+        <button type="submit" id="submitBtn">Login</button>
+      </form>
+
+      <p id="message" class="message"></p>
+
+      <div class="switch">
+        <span id="switchText">Don’t have an account?</span>
+        <button id="toggleBtn" type="button">Create one</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="powered">
+        powered by <span class="zebexa">zebexa</span>
+      </p>
+    </footer>
+
+  </main>
+
+  <script src="auth.js"></script>
+</body>
+      </html>
