@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXA</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<section class="arrival" id="arrival">
+  <div class="arrival-container floating">
+    <div class="line">
+      Clarity locks itself away
+      <span>the moment you’re expected to be someone</span>
+    </div>
+    <button class="enter" id="enterBtn">enter gently</button>
+  </div>
+</section>
+
+<main class="container hidden" id="app">
+  <section class="card">
+    <form id="authForm">
+      <input type="email" id="email" required />
+      <input type="password" id="password" required />
+      <button type="submit">It is a pleasure to receive you</button>
+    </form>
+    <p id="message"></p>
+  </section>
+</main>
+
+<script src="auth.js"></script>
+
+<script>
+const SUPABASE_URL = "https://tnglwzaguyhgnwrnisvm.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_KEY_HERE";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+(async () => {
+  const { data } = await supabase.auth.getSession();
+  if (data.session) {
+    window.location.replace("orientation.html");
+  }
+})();
+</script>
+
+<script>
+const enterBtn = document.getElementById("enterBtn");
+const arrival = document.getElementById("arrival");
+const app = document.getElementById("app");
+
+enterBtn.onclick = () => {
+  arrival.style.display = "none";
+  app.classList.remove("hidden");
+};
+</script>
+
+</body>
+  </html>
