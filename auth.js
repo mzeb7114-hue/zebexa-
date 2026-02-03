@@ -57,9 +57,13 @@ if (error) {
     ? "We have been expecting you"
     : "Your arrival is honored";
 
+  // wait briefly, then show orientation
   setTimeout(() => {
-    if (window.showOrientation) {
-      window.showOrientation();
-    }
-  }, 800);
-}
+    const app = document.getElementById("app");
+    const orientation = document.getElementById("orientation");
+
+    app.classList.add("hidden");
+    orientation.classList.remove("hidden");
+    orientation.classList.add("fade-in");
+  }, 900);
+  }
