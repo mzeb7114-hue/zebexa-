@@ -58,12 +58,17 @@ if (error) {
     : "Your arrival is honored";
 
   // wait briefly, then show orientation
-  setTimeout(() => {
+  }
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session) {
+    const arrival = document.getElementById("arrival");
     const app = document.getElementById("app");
     const orientation = document.getElementById("orientation");
 
-    app.classList.add("hidden");
+    if (arrival) arrival.classList.add("hidden");
+    if (app) app.classList.add("hidden");
+
     orientation.classList.remove("hidden");
     orientation.classList.add("fade-in");
-  }, 900);
   }
+});
