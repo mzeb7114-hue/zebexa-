@@ -50,11 +50,16 @@ form.addEventListener("submit", async (e) => {
     ? await supabaseClient.auth.signInWithPassword({ email, password })
     : await supabaseClient.auth.signUp({ email, password });
 
-  if (error) {
-    message.textContent = error.message;
-  } else {
-    message.textContent = isLogin
-      ? "We have been expecting you"
-      : "Your arrival is honored";
-  }
-});
+if (error) {
+  message.textContent = error.message;
+} else {
+  message.textContent = isLogin
+    ? "We have been expecting you"
+    : "Your arrival is honored";
+
+  setTimeout(() => {
+    if (window.showOrientation) {
+      window.showOrientation();
+    }
+  }, 800);
+}
