@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXA — Arrival</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<section class="arrival" id="arrival">
+  <div class="arrival-container">
+    <div class="line">
+      Clarity locks itself away
+      <span>the moment you’re expected to be someone</span>
+    </div>
+    <button class="enter" id="enterBtn">enter gently</button>
+  </div>
+</section>
+
+<main class="container hidden" id="app">
+
+  <section class="brand">
+    <h1 class="exa">EXA</h1>
+    <p class="tagline">
+      Clarity isn’t found<br />
+      <span>It’s allowed</span>
+    </p>
+  </section>
+
+  <section class="card">
+    <form id="authForm">
+      <input type="email" id="email" placeholder="you@example.com" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" id="submitBtn">Login</button>
+    </form>
+
+    <p id="message" class="message"></p>
+
+    <div class="switch">
+      <button id="toggleBtn" type="button">
+        Enter when it feels true
+      </button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p class="powered">
+      powered by <span class="zebexa">zebexa</span>
+    </p>
+  </footer>
+
+</main>
+
+<script src="auth.js"></script>
+
+<script>
+  const enterBtn = document.getElementById("enterBtn");
+  const arrival = document.getElementById("arrival");
+  const app = document.getElementById("app");
+
+  enterBtn.addEventListener("click", () => {
+    arrival.classList.add("fade-out");
+
+    setTimeout(() => {
+      arrival.classList.add("soft-hidden");
+      app.classList.remove("hidden");
+      app.classList.add("fade-in");
+    }, 900);
+  });
+</script>
+
+</body>
+  </html>
