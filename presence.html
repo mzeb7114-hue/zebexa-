@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXA — Your Presence</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    .presence-container {
+      max-width: 650px;
+      margin: 0 auto;
+      animation: presence-reveal 1.4s var(--transition-arrival);
+      text-align: center; /* CENTER ALL TEXT */
+    }
+
+    @keyframes presence-reveal {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .presence-header {
+      text-align: center; /* CENTERED */
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .presence-header h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 2.2rem;
+      font-weight: 350;
+      background: linear-gradient(125deg, var(--cortex-rose), var(--cortex-lavender));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .presence-header p {
+      color: var(--text-murmur);
+      font-style: italic;
+    }
+
+    .profile-display {
+      background: rgba(18, 20, 26, 0.7);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-thought);
+      border: 1px solid rgba(127, 183, 255, 0.15);
+      padding: 32px;
+      margin-bottom: 24px;
+      text-align: center; /* CENTERED */
+    }
+
+    .profile-avatar-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .profile-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(18, 20, 26, 0.9);
+      border: 3px solid transparent;
+      background-image: linear-gradient(rgba(18, 20, 26, 0.9), rgba(18, 20, 26, 0.9)), 
+                        linear-gradient(125deg, var(--cortex-blue), var(--cortex-rose));
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 20px 40px -15px rgba(127, 183, 255, 0.4);
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-avatar .avatar-placeholder {
+      font-size: 4rem;
+      opacity: 0.7;
+    }
+
+    .profile-name {
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--text-lucid);
+      margin-bottom: 4px;
+      text-align: center; /* CENTERED */
+    }
+
+    .profile-role-badge {
+      display: inline-block;
+      padding: 6px 18px;
+      background: rgba(177, 139, 255, 0.15);
+      border: 1px solid rgba(177, 139, 255, 0.3);
+      border-radius: var(--radius-instinct);
+      color: var(--cortex-lavender);
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+      margin-bottom: 24px;
+    }
+
+    .profile-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+      text-align: center; /* CENTERED */
+    }
+
+    .detail-item {
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-feeling);
+      border-left: 2px solid var(--cortex-rose);
+      text-align: center; /* CENTERED */
+    }
+
+    .detail-label {
+      font-size: 0.8rem;
+      color: var(--text-murmur);
+      text-transform: lowercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      font-style: italic;
+      text-align: center; /* CENTERED */
+    }
+
+    .detail-label::before,
+    .detail-label::after {
+      content: '—';
+      color: var(--cortex-rose);
+      opacity: 0.6;
+      margin: 0 4px;
+    }
+
+    .detail-value {
+      font-size: 1.1rem;
+      color: var(--text-lucid);
+      word-break: break-word;
+      text-align: center; /* CENTERED */
+    }
+
+    .detail-value.empty {
+      color: var(--text-whisper);
+      font-style: italic;
+      opacity: 0.6;
+    }
+
+    .full-width-detail {
+      grid-column: span 2;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 14px 28px;
+      background: rgba(18, 20, 26, 0.6);
+      border: 1px solid rgba(127, 183, 255, 0.2);
+      border-radius: var(--radius-instinct);
+      color: var(--text-thought);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.4s var(--transition-settle);
+      backdrop-filter: blur(5px);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-align: center; /* CENTERED */
+    }
+
+    .action-btn:hover {
+      border-color: var(--cortex-rose);
+      color: var(--text-lucid);
+      background: rgba(255, 139, 194, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(115deg, var(--cortex-blue), var(--cortex-lavender));
+      color: var(--depth-void);
+      border: none;
+      font-weight: 500;
+    }
+
+    .action-btn.primary:hover {
+      box-shadow: 0 10px 25px -8px rgba(177, 139, 255, 0.6);
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      color: var(--text-thought);
+      margin: 32px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(127, 183, 255, 0.2);
+      font-family: 'Fraunces', serif;
+      font-weight: 350;
+      text-align: center; /* CENTERED */
+    }
+
+    .section-title span {
+      color: var(--cortex-rose);
+      margin: 0 8px;
+    }
+
+    .loading-spinner {
+      text-align: center; /* CENTERED */
+      padding: 40px;
+      color: var(--text-murmur);
+      font-style: italic;
+    }
+
+    .error-message {
+      text-align: center; /* CENTERED */
+      padding: 40px;
+      color: var(--cortex-rose);
+      background: rgba(255, 139, 194, 0.1);
+      border-radius: var(--radius-thought);
+    }
+
+    /* Center member since text */
+    #member-since {
+      text-align: center; /* CENTERED */
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<main class="container fade-in" id="presence">
+  <div class="presence-container">
+
+    <div class="presence-header">
+      <h2>your presence</h2>
+      <p>who you are in this space</p>
+    </div>
+
+    <div id="profile-loading" class="loading-spinner">
+      <span>gently unveiling your presence...</span>
+    </div>
+
+    <div id="profile-content" style="display: none;">
+      <!-- Profile Display Card -->
+      <div class="profile-display">
+        <div class="profile-avatar-section">
+          <div class="profile-avatar" id="avatar-container">
+            <div class="avatar-placeholder" id="avatar-placeholder">👤</div>
+            <img id="avatar-image" style="display: none;" alt="profile" />
+          </div>
+          <div class="profile-name" id="display-name"></div>
+          <div class="profile-role-badge" id="display-role"></div>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="section-title"><span>✦</span> what we know of you <span>✦</span></div>
+        
+        <div class="profile-details-grid" id="basic-info">
+          <div class="detail-item">
+            <div class="detail-label">email</div>
+            <div class="detail-value" id="display-email"></div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">age</div>
+            <div class="detail-value" id="display-age"></div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">gender</div>
+            <div class="detail-value" id="display-gender"></div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">phone</div>
+            <div class="detail-value" id="display-phone"></div>
+          </div>
+        </div>
+
+        <!-- Role-Specific Information -->
+        <div class="section-title"><span>❖</span> your path <span>❖</span></div>
+        
+        <div class="profile-details-grid" id="role-info">
+          <!-- Will be filled by JavaScript -->
+        </div>
+
+        <!-- Location Information -->
+        <div class="section-title"><span>◈</span> where you are <span>◈</span></div>
+        
+        <div class="profile-details-grid" id="location-info">
+          <div class="detail-item">
+            <div class="detail-label">city</div>
+            <div class="detail-value" id="display-city"></div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">country</div>
+            <div class="detail-value" id="display-country"></div>
+          </div>
+          <div class="detail-item full-width-detail">
+            <div class="detail-label">address</div>
+            <div class="detail-value" id="display-address"></div>
+          </div>
+        </div>
+
+        <!-- Personal Note / Bio -->
+        <div class="section-title"><span>✧</span> something you shared <span>✧</span></div>
+        
+        <div class="profile-details-grid">
+          <div class="detail-item full-width-detail">
+            <div class="detail-label">personal note</div>
+            <div class="detail-value" id="display-note"></div>
+          </div>
+          <div class="detail-item full-width-detail">
+            <div class="detail-label">bio</div>
+            <div class="detail-value" id="display-bio"></div>
+          </div>
+        </div>
+
+        <!-- Member Since -->
+        <div style="text-align: center; margin-top: 24px; color: var(--text-whisper); font-size: 0.85rem; font-style: italic;">
+          <span id="member-since"></span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <a href="profile.html" class="action-btn primary">✎ refine your presence</a>
+        <button class="action-btn" id="back-to-orientation">← return to choices</button>
+      </div>
+    </div>
+
+    <div id="profile-error" class="error-message" style="display: none;">
+      <p>your presence has not yet been recorded</p>
+      <div class="action-buttons" style="margin-top: 20px;">
+        <a href="profile.html" class="action-btn primary">present yourself with honor</a>
+        <button class="action-btn" id="back-from-error">← return</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="presence.js"></script>
+</body>
+                                                                            </html>
