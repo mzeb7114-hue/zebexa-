@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXA — Who You Are</title>
+
+<style>
+body{
+  font-family:serif;
+  background:#0b0c12;
+  color:white;
+  text-align:center;
+}
+
+.container{max-width:600px;margin:auto;padding:20px}
+
+.photo-preview{
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  overflow:hidden;
+  border:4px solid #caa6ff;
+  margin:auto;
+  position:relative;
+  box-shadow:0 0 40px rgba(200,150,255,.4);
+}
+
+.photo-preview img{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(1);
+  cursor:grab;
+}
+
+button{
+  margin:6px;
+  padding:10px 18px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+}
+
+/* Royal Button */
+#royal-btn{
+  width:100%;
+  padding:16px;
+  font-size:1.05rem;
+  background:linear-gradient(90deg,#e7c6ff,#ffb6d9,#c7e0ff);
+  color:black;
+  font-weight:600;
+  position:relative;
+  overflow:hidden;
+}
+
+#royal-btn:hover::before{
+  content:"";
+  position:absolute;
+  top:0;left:-100%;
+  width:200%;height:100%;
+  background:linear-gradient(90deg,transparent,white,transparent);
+  animation:silk 1s;
+}
+
+@keyframes silk{
+  from{left:-100%}
+  to{left:100%}
+}
+
+.sparkle{
+  position:absolute;
+  font-size:18px;
+  animation:spark 1.2s forwards;
+}
+@keyframes spark{
+  from{opacity:1;transform:translateY(0)}
+  to{opacity:0;transform:translateY(-40px)}
+}
+
+#photo-upload,#camera-upload{display:none}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h2 id="greeting">Your presence is awaited</h2>
+
+<div class="photo-preview">
+<img id="photo-img">
+</div>
+
+<div>
+<button onclick="photoUpload.click()">📷 Gallery</button>
+<button onclick="cameraUpload.click()">🤳 Camera</button>
+<input id="photo-upload" type="file" accept="image/*">
+<input id="camera-upload" type="file" accept="image/*" capture="environment">
+</div>
+
+<form id="profile-form">
+
+<p>Full Name<br>
+<input id="full-name" required></p>
+
+<p>Gender<br>
+<select id="gender" required>
+<option value="">Select</option>
+<option>Female</option>
+<option>Male</option>
+<option>Non-binary</option>
+<option>Prefer not to say</option>
+</select></p>
+
+<p>Date of Birth<br>
+<input type="date" id="dob" required></p>
+
+<p>Age<br>
+<input id="age" readonly></p>
+
+<button id="royal-btn">
+With Grace and Honor, I Cross the Threshold of EXA
+</button>
+
+</form>
+</div>
+
+<audio id="chime"
+src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9e55f1.mp3">
+</audio>
+
+<script>
+const photoUpload=document.getElementById("photo-upload");
+const cameraUpload=document.getElementById("camera-upload");
+const img=document.getElementById("photo-img");
+
+let scale=1,pos={x:0,y:0},drag=false,start={x:0,y:0};
+
+/* Image Load + Auto Crop + Compression */
+function loadImage(file){
+ const reader=new FileReader();
+ reader.onload=e=>{
+  const im=new Image();
+  im.onload=()=>{
+   let size=400;
+   let c=document.createElement("canvas");
+   c.width=size;c.height=size;
+   let ctx=c.getContext("2d");
+   let m=Math.min(im.width,im.height);
+   ctx.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,size,size);
+   c.toBlob(b=>img.src=URL.createObjectURL(b),"image/jpeg",0.75);
+  };
+  im.src=e.target.result;
+ };
+ reader.readAsDataURL(file);
+}
+photoUpload.onchange=e=>loadImage(e.target.files[0]);
+cameraUpload.onchange=e=>loadImage(e.target.files[0]);
+
+/* Zoom & Drag */
+img.onwheel=e=>{
+ e.preventDefault();
+ scale+=e.deltaY*-0.001;
+ scale=Math.min(Math.max(.6,scale),3);
+ img.style.transform=`translate(${pos.x}px,${pos.y}px) scale(${scale})`;
+};
+img.onmousedown=e=>{
+ drag=true;
+ start.x=e.clientX-pos.x;
+ start.y=e.clientY-pos.y;
+ img.style.cursor="grabbing";
+};
+window.onmouseup=()=>drag=false;
+window.onmousemove=e=>{
+ if(!drag)return;
+ pos.x=e.clientX-start.x;
+ pos.y=e.clientY-start.y;
+ img.style.transform=`translate(${pos.x}px,${pos.y}px) scale(${scale})`;
+};
+
+/* DOB → Age */
+const dob=document.getElementById("dob");
+dob.max=new Date().toISOString().split("T")[0];
+dob.onchange=()=>{
+ let b=new Date(dob.value);
+ let t=new Date();
+ let age=t.getFullYear()-b.getFullYear();
+ if(t.getMonth()<b.getMonth() ||
+   (t.getMonth()==b.getMonth() && t.getDate()<b.getDate()))
+ age--;
+ document.getElementById("age").value=age>0?age:"";
+};
+
+/* Greeting + Sparkle + Chime */
+document.getElementById("profile-form").onsubmit=e=>{
+ e.preventDefault();
+ let name=document.getElementById("full-name").value;
+ document.getElementById("greeting").innerText=
+ "Welcome, Honored "+name+" of EXA";
+ document.getElementById("chime").play();
+
+ for(let i=0;i<10;i++){
+  let s=document.createElement("div");
+  s.className="sparkle";
+  s.innerText="✨";
+  s.style.left=Math.random()*window.innerWidth+"px";
+  s.style.top=Math.random()*window.innerHeight+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),1200);
+ }
+};
+</script>
+
+</body>
+  </html>
