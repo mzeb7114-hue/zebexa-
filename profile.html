@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXA — Who You Are</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Additional palace-level refinement */
+    .profile-container {
+      max-width: 560px;
+      margin: 0 auto;
+      animation: chamber-reveal 1.4s var(--transition-arrival);
+      text-align: center; /* CENTER ALL TEXT */
+    }
+
+    @keyframes chamber-reveal {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .honorific {
+      text-align: center; /* CENTERED */
+      margin-bottom: 32px;
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      color: var(--cortex-rose);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      position: relative;
+    }
+
+    .honorific::before,
+    .honorific::after {
+      content: '✦';
+      margin: 0 16px;
+      color: var(--cortex-lavender);
+      opacity: 0.5;
+      font-size: 0.8rem;
+    }
+
+    /* Profile Photo Section */
+    .photo-section {
+      margin: 32px 0 24px;
+      text-align: center; /* CENTERED */
+    }
+
+    .photo-label {
+      color: var(--text-thought);
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+      font-style: italic;
+      margin-bottom: 16px;
+      display: block;
+      text-align: center; /* CENTERED */
+    }
+
+    .photo-label::before,
+    .photo-label::after {
+      content: '—';
+      color: var(--cortex-rose);
+      opacity: 0.5;
+      margin: 0 8px;
+    }
+
+    .photo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .photo-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(18, 20, 26, 0.8);
+      border: 2px solid rgba(127, 183, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: all 0.5s var(--transition-settle);
+      box-shadow: 0 10px 30px -10px rgba(127, 183, 255, 0.3);
+    }
+
+    .photo-preview:hover {
+      border-color: var(--cortex-rose);
+      transform: scale(1.02);
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-preview .placeholder-icon {
+      font-size: 3rem;
+      opacity: 0.5;
+    }
+
+    .photo-options {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .photo-btn {
+      padding: 10px 18px;
+      background: rgba(18, 20, 26, 0.6);
+      border: 1px solid rgba(127, 183, 255, 0.2);
+      border-radius: var(--radius-instinct);
+      color: var(--text-thought);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.4s var(--transition-settle);
+      backdrop-filter: blur(5px);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .photo-btn:hover {
+      border-color: var(--cortex-lavender);
+      color: var(--text-lucid);
+      background: rgba(177, 139, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .photo-btn.hidden {
+      display: none;
+    }
+
+    .role-selector {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 24px 0 16px;
+      text-align: center; /* CENTERED */
+    }
+
+    .role-option {
+      padding: 20px 12px;
+      background: rgba(18, 20, 26, 0.6);
+      border: 1px solid rgba(127, 183, 255, 0.15);
+      border-radius: var(--radius-feeling);
+      text-align: center; /* CENTERED */
+      cursor: pointer;
+      transition: all 0.5s var(--transition-settle);
+      backdrop-filter: blur(10px);
+    }
+
+    .role-option.selected {
+      border-color: var(--cortex-rose);
+      background: rgba(255, 139, 194, 0.08);
+      box-shadow: 0 10px 30px -10px rgba(255, 139, 194, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .role-option:hover {
+      border-color: var(--cortex-lavender);
+      background: rgba(177, 139, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .role-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+    }
+
+    .role-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-lucid);
+      margin-bottom: 4px;
+    }
+
+    .role-desc {
+      font-size: 0.8rem;
+      color: var(--text-murmur);
+      font-style: italic;
+    }
+
+    .field-group {
+      margin: 24px 0;
+      position: relative;
+      text-align: center; /* CENTERED */
+    }
+
+    .field-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-thought);
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+      font-style: italic;
+      text-align: center; /* CENTERED */
+    }
+
+    .field-group label::before,
+    .field-group label::after {
+      content: '—';
+      color: var(--cortex-rose);
+      opacity: 0.5;
+      margin: 0 8px;
+    }
+
+    .field-group input,
+    .field-group textarea,
+    .field-group select {
+      width: 100%;
+      text-align: center; /* CENTERED INPUT TEXT */
+    }
+
+    .optional-field {
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .optional-field:hover {
+      opacity: 1;
+    }
+
+    .optional-field input,
+    .optional-field textarea {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .custom-role-container {
+      margin-top: 24px;
+      padding: 20px;
+      background: rgba(18, 20, 26, 0.4);
+      border-radius: var(--radius-feeling);
+      border: 1px dashed rgba(177, 139, 255, 0.3);
+      animation: appear-gently 0.8s var(--transition-arrival);
+      text-align: center; /* CENTERED */
+    }
+
+    @keyframes appear-gently {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .custom-role-container label {
+      color: var(--cortex-lavender);
+      text-align: center; /* CENTERED */
+    }
+
+    #profile-message {
+      text-align: center; /* CENTERED */
+      margin: 20px 0 10px;
+    }
+
+    .palace-footer {
+      margin-top: 48px;
+      text-align: center; /* CENTERED */
+      color: var(--text-whisper);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+    }
+
+    .palace-footer span {
+      color: var(--cortex-rose);
+      margin: 0 8px;
+    }
+
+    .return-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: var(--text-murmur);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--text-whisper);
+      padding-bottom: 4px;
+      transition: all 0.4s ease;
+      cursor: pointer;
+    }
+
+    .return-link:hover {
+      color: var(--cortex-blue);
+      border-bottom-color: var(--cortex-blue);
+    }
+
+    /* Hidden file input */
+    #photo-upload {
+      display: none;
+    }
+
+    /* Center submit button text */
+    #save-profile-btn {
+      width: 100%;
+      text-align: center; /* CENTERED */
+    }
+
+    /* Center placeholder text */
+    input::placeholder,
+    textarea::placeholder {
+      text-align: center; /* CENTERED */
+    }
+  </style>
+</head>
+
+<body>
+<main class="container fade-in" id="profile-app">
+  <div class="profile-container">
+
+    <div class="honorific">
+      your presence is requested
+    </div>
+
+    <section class="brand">
+      <h1 class="exa">EXA</h1>
+      <p class="tagline">
+        before you enter<br />
+        <span id="honorific-message">who you are, matters</span>
+      </p>
+    </section>
+
+    <section class="card" id="profile-card">
+      <div id="profile-status" class="message" style="margin-bottom: 16px; text-align: center;"></div>
+
+      <!-- Profile Photo Section -->
+      <div class="photo-section">
+        <div class="photo-label">your reflection</div>
+        <div class="photo-container">
+          <div class="photo-preview" id="photo-preview">
+            <div class="placeholder-icon" id="photo-placeholder">👤</div>
+            <img id="photo-image" style="display: none;" alt="profile" />
+          </div>
+          <div class="photo-options">
+            <button type="button" class="photo-btn" id="gallery-btn">📷 gallery</button>
+            <button type="button" class="photo-btn" id="camera-btn">🤳 camera</button>
+            <input type="file" id="photo-upload" accept="image/*" capture="environment" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Role Selection - Choose what resonates with you -->
+      <div class="role-selector">
+        <div class="role-option" data-role="student" id="role-student">
+          <div class="role-icon">🎓</div>
+          <div class="role-name">student</div>
+          <div class="role-desc">one who seeks</div>
+        </div>
+        <div class="role-option" data-role="teacher" id="role-teacher">
+          <div class="role-icon">📚</div>
+          <div class="role-name">teacher</div>
+          <div class="role-desc">one who guides</div>
+        </div>
+        <div class="role-option" data-role="guardian" id="role-guardian">
+          <div class="role-icon">🏛️</div>
+          <div class="role-name">guardian</div>
+          <div class="role-desc">one who supports</div>
+        </div>
+        <div class="role-option" data-role="other" id="role-other">
+          <div class="role-icon">✨</div>
+          <div class="role-name">other</div>
+          <div class="role-desc">what you choose to be</div>
+        </div>
+      </div>
+
+      <!-- Custom Role Input (appears when "other" is selected) -->
+      <div id="custom-role-container" class="custom-role-container" style="display: none;">
+        <div class="field-group">
+          <label>how would you name your presence</label>
+          <input type="text" id="custom-role" placeholder="e.g., artist, mentor, seeker..." />
+        </div>
+      </div>
+
+      <form id="profile-form">
+        <!-- Full Name - Required, the foundation -->
+        <div class="field-group">
+          <label>what may we call you</label>
+          <input type="text" id="full-name" placeholder="your name, as you prefer" required />
+        </div>
+
+        <!-- Age & Gender - New fields -->
+        <div class="field-group">
+          <label>your age</label>
+          <input type="number" id="age" placeholder="years of presence" />
+        </div>
+
+        <div class="field-group">
+          <label>your gender</label>
+          <select id="gender">
+            <option value="" selected disabled>— honor your truth —</option>
+            <option value="female">female</option>
+            <option value="male">male</option>
+            <option value="non-binary">non-binary</option>
+            <option value="prefer-not-to-say">prefer not to say</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+
+        <!-- Student-specific fields -->
+        <div id="student-fields" style="display: none;">
+          <div class="field-group">
+            <label>institution of learning</label>
+            <input type="text" id="school" placeholder="where you study" />
+          </div>
+          <div class="field-group optional-field">
+            <label>year of study (if you wish to share)</label>
+            <input type="text" id="grade" placeholder="e.g., third year" />
+          </div>
+        </div>
+
+        <!-- Teacher-specific fields -->
+        <div id="teacher-fields" style="display: none;">
+          <div class="field-group">
+            <label>subjects you tend to</label>
+            <input type="text" id="subjects" placeholder="what you teach" />
+          </div>
+          <div class="field-group optional-field">
+            <label>institution (optional)</label>
+            <input type="text" id="institution" placeholder="where you share your knowledge" />
+          </div>
+        </div>
+
+        <!-- Guardian-specific fields -->
+        <div id="guardian-fields" style="display: none;">
+          <div class="field-group">
+            <label>students in your care</label>
+            <input type="text" id="students" placeholder="names or relation" />
+          </div>
+          <div class="field-group optional-field">
+            <label>preferred contact manner</label>
+            <input type="text" id="contact-preference" placeholder="how may we reach you" />
+          </div>
+        </div>
+
+        <!-- Other-specific fields - for those who choose their own path -->
+        <div id="other-fields" style="display: none;">
+          <div class="field-group">
+            <label>what brings you here</label>
+            <input type="text" id="purpose" placeholder="your reason for being" />
+          </div>
+          <div class="field-group optional-field">
+            <label>how would you like to contribute</label>
+            <input type="text" id="contribution" placeholder="your gift to this space" />
+          </div>
+        </div>
+
+        <!-- Location fields -->
+        <div class="field-group">
+          <label>your city</label>
+          <input type="text" id="city" placeholder="where you reside" />
+        </div>
+
+        <div class="field-group">
+          <label>your country</label>
+          <input type="text" id="country" placeholder="homeland" />
+        </div>
+
+        <div class="field-group optional-field">
+          <label>address (optional)</label>
+          <input type="text" id="address" placeholder="for those who wish to share" />
+        </div>
+
+        <div class="field-group optional-field">
+          <label>phone (optional)</label>
+          <input type="tel" id="phone" placeholder="how we may reach you" />
+        </div>
+
+        <!-- Bio / Personal Note -->
+        <div class="field-group optional-field">
+          <label>a brief bio</label>
+          <textarea id="bio" rows="2" placeholder="who you are, in your own words..."></textarea>
+        </div>
+
+        <div class="field-group optional-field">
+          <label>something you'd like us to know (optional)</label>
+          <textarea id="personal-note" rows="2" placeholder="a thought, a preference, a quiet note..."></textarea>
+        </div>
+
+        <button type="submit" id="save-profile-btn">
+          present yourself with honor
+        </button>
+
+        <div id="profile-message" class="message"></div>
+      </form>
+    </section>
+
+    <div class="palace-footer">
+      <span>❖</span> your presence honors us <span>❖</span>
+    </div>
+
+    <div class="return-link" id="return-to-orientation">
+      ← return to the chamber of choices
+    </div>
+  </div>
+</main>
+
+<script src="profile.js"></script>
+</body>
+  </html>
