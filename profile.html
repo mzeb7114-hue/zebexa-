@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXA — Who You Are</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Additional palace-level refinement */
+    .profile-container {
+      max-width: 560px;
+      margin: 0 auto;
+      animation: chamber-reveal 1.4s var(--transition-arrival);
+      text-align: center; /* CENTER ALL TEXT */
+    }
+
+    @keyframes chamber-reveal {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .honorific {
+      text-align: center; /* CENTERED */
+      margin-bottom: 32px;
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      color: var(--cortex-rose);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      position: relative;
+    }
+
+    .honorific::before,
+    .honorific::after {
+      content: '✦';
+      margin: 0 16px;
+      color: var(--cortex-lavender);
+      opacity: 0.5;
+      font-size: 0.8rem;
+    }
+
+    /* Profile Photo Section — HIDDEN */
+    .photo-section {
+      display: none;
+    }
+
+    /* Role selector — HIDDEN */
+    .role-selector {
+      display: none;
+    }
+
+    /* Custom role container — HIDDEN */
+    .custom-role-container {
+      display: none !important;
+    }
+
+    /* Hide all conditional field blocks */
+    #student-fields,
+    #teacher-fields,
+    #guardian-fields,
+    #other-fields {
+      display: none !important;
+    }
+
+    /* Hide location, contact, bio fields */
+    .field-group:has(#city),
+    .field-group:has(#country),
+    .field-group:has(#address),
+    .field-group:has(#phone),
+    .field-group:has(#bio),
+    .field-group:has(#personal-note) {
+      display: none;
+    }
+
+    /* Also hide any leftover optional containers if they exist */
+    .optional-field {
+      display: none;
+    }
+
+    /* Keep only the three wanted fields visible */
+    .field-group {
+      margin: 24px 0;
+      position: relative;
+      text-align: center;
+    }
+
+    .field-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-thought);
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .field-group label::before,
+    .field-group label::after {
+      content: '—';
+      color: var(--cortex-rose);
+      opacity: 0.5;
+      margin: 0 8px;
+    }
+
+    .field-group input,
+    .field-group select {
+      width: 100%;
+      text-align: center;
+      padding: 0.9rem 1.2rem;
+      background: rgba(12, 12, 18, 0.7);
+      border: 1px solid rgba(210, 180, 255, 0.2);
+      border-radius: 50px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      color: #f0ecf5;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .field-group input:focus,
+    .field-group select:focus {
+      border-color: #cdb2ff;
+      background: #15131f;
+      box-shadow: 0 0 0 3px rgba(170, 140, 255, 0.2);
+    }
+
+    .field-group input::placeholder {
+      color: #6a6580;
+      text-align: center;
+      font-style: italic;
+      opacity: 0.6;
+    }
+
+    /* Keep #profile-message as is */
+    #profile-message {
+      text-align: center;
+      margin: 20px 0 10px;
+    }
+
+    .palace-footer {
+      margin-top: 48px;
+      text-align: center;
+      color: var(--text-whisper);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+    }
+
+    .palace-footer span {
+      color: var(--cortex-rose);
+      margin: 0 8px;
+    }
+
+    .return-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: var(--text-murmur);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--text-whisper);
+      padding-bottom: 4px;
+      transition: all 0.4s ease;
+      cursor: pointer;
+    }
+
+    .return-link:hover {
+      color: var(--cortex-blue);
+      border-bottom-color: var(--cortex-blue);
+    }
+
+    /* Hidden file input — kept but unused */
+    #photo-upload {
+      display: none;
+    }
+
+    /* Center submit button text */
+    #save-profile-btn {
+      width: 100%;
+      text-align: center;
+      background: rgba(40, 35, 55, 0.8);
+      border: 1px solid rgba(220, 180, 255, 0.3);
+      padding: 1rem 1.8rem;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #f0e5ff;
+      letter-spacing: 0.1rem;
+      text-transform: uppercase;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: all 0.4s;
+      margin: 1.8rem 0 0.8rem;
+      box-shadow: 0 10px 20px -10px #201d30;
+      font-family: 'Fraunces', serif;
+    }
+
+    #save-profile-btn:hover {
+      background: rgba(75, 60, 100, 0.7);
+      border-color: #dbbaff;
+      transform: translateY(-3px);
+      box-shadow: 0 18px 30px -12px #b185db;
+    }
+
+    /* Center placeholder */
+    input::placeholder,
+    textarea::placeholder {
+      text-align: center;
+    }
+
+    /* ensure only fullname, dob, gender show */
+    .field-group:has(#full-name),
+    .field-group:has(#dob),
+    .field-group:has(#gender) {
+      display: block;
+    }
+
+    /* make sure age field is hidden */
+    .field-group:has(#age) {
+      display: none;
+    }
+
+    /* adjust select arrow */
+    select {
+      cursor: pointer;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23b5a6d9" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 1.2rem center;
+      background-size: 14px;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+  </style>
+</head>
+
+<body>
+<main class="container fade-in" id="profile-app">
+  <div class="profile-container">
+
+    <div class="honorific">
+      your presence is requested
+    </div>
+
+    <section class="brand">
+      <h1 class="exa">EXA</h1>
+      <p class="tagline">
+        before you enter<br />
+        <span id="honorific-message">who you are, matters</span>
+      </p>
+    </section>
+
+    <section class="card" id="profile-card">
+      <div id="profile-status" class="message" style="margin-bottom: 16px; text-align: center;"></div>
+
+      <!-- Profile Photo Section (hidden via CSS, but keep markup to avoid breaking any js) -->
+      <div class="photo-section">
+        <div class="photo-label">your reflection</div>
+        <div class="photo-container">
+          <div class="photo-preview" id="photo-preview">
+            <div class="placeholder-icon" id="photo-placeholder">👤</div>
+            <img id="photo-image" style="display: none;" alt="profile" />
+          </div>
+          <div class="photo-options">
+            <button type="button" class="photo-btn" id="gallery-btn">📷 gallery</button>
+            <button type="button" class="photo-btn" id="camera-btn">🤳 camera</button>
+            <input type="file" id="photo-upload" accept="image/*" capture="environment" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Role Selector (hidden) -->
+      <div class="role-selector">
+        <div class="role-option" data-role="student" id="role-student">
+          <div class="role-icon">🎓</div>
+          <div class="role-name">student</div>
+          <div class="role-desc">one who seeks</div>
+        </div>
+        <div class="role-option" data-role="teacher" id="role-teacher">
+          <div class="role-icon">📚</div>
+          <div class="role-name">teacher</div>
+          <div class="role-desc">one who guides</div>
+        </div>
+        <div class="role-option" data-role="guardian" id="role-guardian">
+          <div class="role-icon">🏛️</div>
+          <div class="role-name">guardian</div>
+          <div class="role-desc">one who supports</div>
+        </div>
+        <div class="role-option" data-role="other" id="role-other">
+          <div class="role-icon">✨</div>
+          <div class="role-name">other</div>
+          <div class="role-desc">what you choose to be</div>
+        </div>
+      </div>
+
+      <!-- Custom Role Input (hidden) -->
+      <div id="custom-role-container" class="custom-role-container" style="display: none;">
+        <div class="field-group">
+          <label>how would you name your presence</label>
+          <input type="text" id="custom-role" placeholder="e.g., artist, mentor, seeker..." />
+        </div>
+      </div>
+
+      <form id="profile-form">
+        <!-- Full Name - Required, the foundation (keep exactly as was) -->
+        <div class="field-group">
+          <label>what may we call you</label>
+          <input type="text" id="full-name" placeholder="your name, as you prefer" required />
+        </div>
+
+        <!-- Age field - keep in markup but hide via CSS -->
+        <div class="field-group">
+          <label>your age</label>
+          <input type="number" id="age" placeholder="years of presence" />
+        </div>
+
+        <!-- Date of Birth - new field, simple text input (no calendar popup) -->
+        <div class="field-group">
+          <label>date of birth</label>
+          <input type="text" id="dob" placeholder="DD / MM / YYYY" />
+        </div>
+
+        <!-- Gender - dropdown (exactly as provided) -->
+        <div class="field-group">
+          <label>your gender</label>
+          <select id="gender">
+            <option value="" selected disabled>— honor your truth —</option>
+            <option value="female">female</option>
+            <option value="male">male</option>
+            <option value="non-binary">non-binary</option>
+            <option value="prefer-not-to-say">prefer not to say</option>
+            <option value="other">other</option>
+          </select>
+        </div>
+
+        <!-- All the following field groups will be hidden via CSS -->
+        <div id="student-fields" style="display: none;">
+          <div class="field-group">
+            <label>institution of learning</label>
+            <input type="text" id="school" placeholder="where you study" />
+          </div>
+          <div class="field-group optional-field">
+            <label>year of study (if you wish to share)</label>
+            <input type="text" id="grade" placeholder="e.g., third year" />
+          </div>
+        </div>
+
+        <div id="teacher-fields" style="display: none;">
+          <div class="field-group">
+            <label>subjects you tend to</label>
+            <input type="text" id="subjects" placeholder="what you teach" />
+          </div>
+          <div class="field-group optional-field">
+            <label>institution (optional)</label>
+            <input type="text" id="institution" placeholder="where you share your knowledge" />
+          </div>
+        </div>
+
+        <div id="guardian-fields" style="display: none;">
+          <div class="field-group">
+            <label>students in your care</label>
+            <input type="text" id="students" placeholder="names or relation" />
+          </div>
+          <div class="field-group optional-field">
+            <label>preferred contact manner</label>
+            <input type="text" id="contact-preference" placeholder="how may we reach you" />
+          </div>
+        </div>
+
+        <div id="other-fields" style="display: none;">
+          <div class="field-group">
+            <label>what brings you here</label>
+            <input type="text" id="purpose" placeholder="your reason for being" />
+          </div>
+          <div class="field-group optional-field">
+            <label>how would you like to contribute</label>
+            <input type="text" id="contribution" placeholder="your gift to this space" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>your city</label>
+          <input type="text" id="city" placeholder="where you reside" />
+        </div>
+
+        <div class="field-group">
+          <label>your country</label>
+          <input type="text" id="country" placeholder="homeland" />
+        </div>
+
+        <div class="field-group optional-field">
+          <label>address (optional)</label>
+          <input type="text" id="address" placeholder="for those who wish to share" />
+        </div>
+
+        <div class="field-group optional-field">
+          <label>phone (optional)</label>
+          <input type="tel" id="phone" placeholder="how we may reach you" />
+        </div>
+
+        <div class="field-group optional-field">
+          <label>a brief bio</label>
+          <textarea id="bio" rows="2" placeholder="who you are, in your own words..."></textarea>
+        </div>
+
+        <div class="field-group optional-field">
+          <label>something you'd like us to know (optional)</label>
+          <textarea id="personal-note" rows="2" placeholder="a thought, a preference, a quiet note..."></textarea>
+        </div>
+
+        <button type="submit" id="save-profile-btn">
+          present yourself with honor
+        </button>
+
+        <div id="profile-message" class="message"></div>
+      </form>
+    </section>
+
+    <div class="palace-footer">
+      <span>❖</span> your presence honors us <span>❖</span>
+    </div>
+
+    <div class="return-link" id="return-to-orientation">
+      ← return to the chamber of choices
+    </div>
+  </div>
+</main>
+
+<script src="profile.js"></script>
+</body>
+    </html>
