@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXA Profile</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="screen">
+
+<h1 class="title">Your presence is awaited</h1>
+
+<!-- PHOTO -->
+<div class="photo-box" id="photo-preview">
+<span id="photo-placeholder">👤</span>
+<img id="photo-image">
+</div>
+
+<div class="photo-buttons">
+<button onclick="photoUpload.click()">📷 Gallery</button>
+<button onclick="photoUpload.click()">🤳 Camera</button>
+<input id="photo-upload" type="file" accept="image/*">
+</div>
+
+<form id="profile-form">
+
+<label>Full Name</label>
+<input id="full-name" type="text">
+
+<label>Gender</label>
+<select id="gender">
+<option value="">Select</option>
+<option>Male</option>
+<option>Female</option>
+<option>Non-binary</option>
+<option>Prefer not to say</option>
+</select>
+
+<label>Date of Birth</label>
+<input id="dob" type="date">
+
+<!-- AGE REMOVED -->
+
+<button id="save-profile-btn" type="submit">
+With Grace and Honor, I Cross the Threshold of EXA
+</button>
+
+<button id="edit-profile-btn" type="button">
+Edit profile later
+</button>
+
+<div id="profile-message"></div>
+
+</form>
+
+</div>
+
+<script src="profile.js"></script>
+
+</body>
+                    </html>
