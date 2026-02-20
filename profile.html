@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EXA — Who You Are</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+
+<style>
+
+/* ONLY required changes done below */
+
+/* Bigger profile photo */
+.photo-preview {
+  width: 170px;
+  height: 170px;
+}
+
+/* Date input styling same as others */
+input[type="date"] {
+  width: 100%;
+  text-align: center;
+}
+
+/* Hide unused sections safely */
+#student-fields,
+#teacher-fields,
+#guardian-fields,
+#other-fields,
+#custom-role-container {
+  display: none !important;
+}
+
+</style>
+</head>
+
+<body>
+<main class="container fade-in" id="profile-app">
+<div class="profile-container">
+
+<div class="honorific">
+your presence is requested
+</div>
+
+<section class="brand">
+<h1 class="exa">EXA</h1>
+<p class="tagline">
+before you enter<br />
+<span id="honorific-message">who you are, matters</span>
+</p>
+</section>
+
+<section class="card" id="profile-card">
+
+<form id="profile-form">
+
+<!-- Profile Photo (OPTIONAL) -->
+<div class="photo-section">
+<div class="photo-label">your reflection (optional)</div>
+<div class="photo-container">
+<div class="photo-preview" id="photo-preview">
+<div class="placeholder-icon" id="photo-placeholder">👤</div>
+<img id="photo-image" style="display:none;" />
+</div>
+<div class="photo-options">
+<button type="button" class="photo-btn" onclick="document.getElementById('photo-upload').click()">📷 gallery</button>
+<input type="file" id="photo-upload" accept="image/*">
+</div>
+</div>
+</div>
+
+<!-- FULL NAME (REQUIRED) -->
+<div class="field-group">
+<label>what may we call you</label>
+<input type="text" id="full-name" placeholder="your name, as you prefer" required />
+</div>
+
+<!-- DATE OF BIRTH (REQUIRED) -->
+<div class="field-group">
+<label>your date of birth</label>
+<input type="date" id="dob" required />
+</div>
+
+<!-- GENDER (REQUIRED) -->
+<div class="field-group">
+<label>your gender</label>
+<select id="gender" required>
+<option value="" disabled selected>— honor your truth —</option>
+<option value="female">female</option>
+<option value="male">male</option>
+<option value="non-binary">non-binary</option>
+<option value="prefer-not-to-say">prefer not to say</option>
+<option value="other">other</option>
+</select>
+</div>
+
+<!-- OPTIONAL FIELDS -->
+<div class="field-group optional-field">
+<label>your city (optional)</label>
+<input type="text" id="city" placeholder="where you reside" />
+</div>
+
+<div class="field-group optional-field">
+<label>your country (optional)</label>
+<input type="text" id="country" placeholder="homeland" />
+</div>
+
+<div class="field-group optional-field">
+<label>a brief bio (optional)</label>
+<textarea id="bio" rows="2" placeholder="who you are, in your own words..."></textarea>
+</div>
+
+<div class="field-group optional-field">
+<label>something you'd like us to know (optional)</label>
+<textarea id="personal-note" rows="2" placeholder="a thought, a preference, a quiet note..."></textarea>
+</div>
+
+<button type="submit" id="save-profile-btn">
+present yourself with honor
+</button>
+
+<div id="profile-message" class="message"></div>
+
+</form>
+</section>
+
+<div class="palace-footer">
+<span>❖</span> your presence honors us <span>❖</span>
+</div>
+
+</div>
+</main>
+
+<script>
+/* PHOTO PREVIEW (optional, no errors if skipped) */
+document.getElementById('photo-upload').addEventListener('change', function(e){
+const file = e.target.files[0];
+if(file){
+const reader = new FileReader();
+reader.onload = function(event){
+document.getElementById('photo-image').src = event.target.result;
+document.getElementById('photo-image').style.display = 'block';
+document.getElementById('photo-placeholder').style.display = 'none';
+}
+reader.readAsDataURL(file);
+}
+});
+
+/* FORM VALIDATION — ONLY 3 REQUIRED FIELDS */
+document.getElementById('profile-form').addEventListener('submit', function(e){
+e.preventDefault();
+
+const name = document.getElementById('full-name').value.trim();
+const dob = document.getElementById('dob').value;
+const gender = document.getElementById('gender').value;
+
+if(!name || !dob || !gender){
+document.getElementById('profile-message').innerText = "Please complete the three required fields.";
+return;
+}
+
+/* SUCCESS — NO ERROR */
+document.getElementById('profile-message').innerText = "Profile saved successfully.";
+
+/* Here you can connect Supabase save logic safely */
+});
+</script>
+
+</body>
+  </html>
