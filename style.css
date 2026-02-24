@@ -872,3 +872,109 @@ RESPONSIVE CONSCIOUSNESS
     border: 1.5px solid rgba(255,255,255,0.3);
   }
                     }
+
+/* ===============================
+PROFILE PHOTO - REFLECTION OPTION
+=============================== */
+
+.profile-photo-wrapper {
+  text-align: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.profile-photo-container {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+#photo-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(18, 20, 26, 0.8);
+  border: 2px solid var(--cortex-blue);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: all 0.5s var(--transition-settle);
+  box-shadow: 0 10px 25px -8px rgba(127, 183, 255, 0.4);
+}
+
+#photo-preview:hover {
+  transform: scale(1.02);
+  border-color: var(--cortex-rose);
+  box-shadow: 0 15px 35px -8px rgba(255, 139, 194, 0.5);
+}
+
+#photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+#photo-placeholder {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.photo-upload-label {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--cortex-blue);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--depth-void);
+  transition: all 0.4s var(--transition-arrival);
+}
+
+.photo-upload-label:hover {
+  background: var(--cortex-rose);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.photo-upload-label span {
+  color: var(--depth-void);
+  font-size: 1.2rem;
+}
+
+.reflection-text {
+  color: var(--text-murmur);
+  font-size: 0.85rem;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* ===============================
+FIXED STYLING FOR SELECTED/UNSELECTED STATES
+=============================== */
+
+.field-group select:valid,
+.field-group input:not(:placeholder-shown) {
+  border-left: 3px solid var(--cortex-blue);
+  border-right: 3px solid var(--cortex-rose);
+  background: rgba(127, 183, 255, 0.05);
+}
+
+.field-group select:invalid,
+.field-group input:placeholder-shown {
+  border-left: 1px solid var(--text-whisper);
+  border-right: 1px solid var(--text-whisper);
+  color: var(--text-murmur);
+  font-style: italic;
+}
+
+input[type="date"]:valid {
+  border-left: 3px solid var(--cortex-blue);
+  border-right: 3px solid var(--cortex-rose);
+  }
